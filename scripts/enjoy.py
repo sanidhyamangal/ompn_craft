@@ -73,7 +73,7 @@ class Renderer:
 class SERenderer(Renderer):
     def main_loop(self, window):
         obs = self.env.reset()
-        self.visited_path = numpy.zeros((10,10))
+        visited_path = numpy.zeros((10,10))
         self.reset(obs)
         done = False
         action = None
@@ -86,8 +86,9 @@ class SERenderer(Renderer):
             action = self.get_action(obs, ch)
             obs, reward, done, _ = self.env.step(action)
 
-            reward += check_if_buggy_region(obs['pos'], self.visited_path)
-            self.visited_path[obs['pos']] = 1
+            r,visited_path= check_if_buggy_region(obs['pos'], self.visited_path)
+            reward += r
+            visited_path[obs['pos']] = 1
             ret += reward
             steps += 1
 
