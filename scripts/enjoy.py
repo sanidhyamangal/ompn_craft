@@ -10,6 +10,7 @@ import argparse
 import torch
 from typing import Dict
 import numpy
+from utils import check_if_buggy_region
 
 
 def get_args():
@@ -69,6 +70,35 @@ class Renderer:
                                 'return': ret,
                                 'done': done})
 
+class SERenderer(Renderer):
+    def __init__(self, args):
+        super().__init__(args)
+        self.visited_path = numpy.zeros((10,10))        
+
+    def main_loop(self, window):
+        obs = self.env.reset()
+        self.reset(obs)
+        done = False
+        action = None
+        reward = None
+        steps = 0
+        ret = 0
+        while not done:
+            self.display(action, done, ret, reward, steps, window)
+            ch = window.getch()
+            action = self.get_action(obs, ch)
+            obs, reward, done, _ = self.env.step(action)
+
+            reward += check_if_buggy_region(obs['pos'], self.visited_path)
+            self.visited_path[obs['pos']] = 1
+            ret += reward
+            steps += 1
+
+        # Clear screen
+        self.display(action, done, ret, reward, steps, window)
+        window.getch()
+        
+
 
 class Model(Renderer):
     def __init__(self, args):
@@ -109,7 +139,7 @@ class Model(Renderer):
                                 'p_avg': p_avg})
 
 
-class Keyboard(Renderer):
+class Keyboard(SERenderer):
 
     def get_action(self, obs, ch):
         if ch == curses.KEY_UP:
