@@ -7,13 +7,15 @@ import torch.nn.functional as F
 from torch.distributions import Categorical
 from gym.wrappers import TimeLimit
 from scripts.utils import check_if_buggy_region
+import gym_psketch
+import numpy as np
 
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-env = TimeLimit(gym.make("makebedfull-v0"), max_episode_steps=50)
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cpu"
+env = TimeLimit(gym.make('makebedfull-v0'), max_episode_steps=50)
 
 state_size = 1075
-action_size = 4
+action_size = 6
 lr = 0.0001
 
 class Actor(nn.Module):
@@ -59,11 +61,12 @@ def compute_returns(next_value, rewards, masks, gamma=0.99):
 
 
 def trainIters(actor, critic, n_iters):
+    print("Entered Training loop")
     optimizerA = optim.Adam(actor.parameters())
     optimizerC = optim.Adam(critic.parameters())
     for iter in range(n_iters):
         visited_path = np.zeros((10,10))
-        obs,reward, done, _ = env.reset()
+        obs =  env.reset()
         state = obs['features'].T
         log_probs = []
         values = []
@@ -72,13 +75,13 @@ def trainIters(actor, critic, n_iters):
         entropy = 0
         env.reset()
 
-        for i in count():
+        for i in range(50):
             # env.render()
             state = torch.FloatTensor(state).to(device)
             dist, value = actor(state), critic(state)
 
             action = dist.sample()
-            next_state, reward, done, _ = env.step(action.cpu().numpy())
+            next_state, reward, done, _ = env.step(action.cpu().item())
 
             log_prob = dist.log_prob(action).unsqueeze(0)
             entropy += dist.entropy().mean()
@@ -95,7 +98,7 @@ def trainIters(actor, critic, n_iters):
                 break
 
 
-        next_state = torch.FloatTensor(next_state).to(device)
+        next_state = torch.FloatTensor(next_state['features'].T).to(device)
         next_value = critic(next_state)
         returns = compute_returns(next_value, rewards, masks)
 
