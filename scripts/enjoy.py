@@ -71,12 +71,9 @@ class Renderer:
                                 'done': done})
 
 class SERenderer(Renderer):
-    def __init__(self, args):
-        super().__init__(args)
-        self.visited_path = numpy.zeros((10,10))        
-
     def main_loop(self, window):
         obs = self.env.reset()
+        self.visited_path = numpy.zeros((10,10))
         self.reset(obs)
         done = False
         action = None
