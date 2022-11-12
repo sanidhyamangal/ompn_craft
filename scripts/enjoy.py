@@ -86,7 +86,7 @@ class SERenderer(Renderer):
             action = self.get_action(obs, ch)
             obs, reward, done, _ = self.env.step(action)
 
-            r,visited_path= check_if_buggy_region(obs['pos'], self.visited_path)
+            r,visited_path= check_if_buggy_region(obs['pos'], visited_path)
             reward += r
             visited_path[obs['pos']] = 1
             ret += reward
