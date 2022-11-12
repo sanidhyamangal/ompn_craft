@@ -75,13 +75,15 @@ def trainIters(actor, critic, n_iters):
         entropy = 0
         env.reset()
 
-        for i in range(50):
+        for i in range(500):
             # env.render()
             state = torch.FloatTensor(state).to(device)
             dist, value = actor(state), critic(state)
 
             action = dist.sample()
             next_state, reward, done, _ = env.step(action.cpu().item())
+            r,visited_path = check_if_buggy_region(next_state['pos'], visited_path)
+            reward += r
 
             log_prob = dist.log_prob(action).unsqueeze(0)
             entropy += dist.entropy().mean()
