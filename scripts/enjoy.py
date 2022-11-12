@@ -18,7 +18,7 @@ def get_args():
     parser.add_argument('-mode', choices=['demo', 'keyboard', 'model'], default='keyboard')
     parser.add_argument('-max_steps', type=int, default=40, help='Maximum steps')
     parser.add_argument('-model_ckpt', default=None)
-    parser.add_argument('-env', default='makeplank-v0')
+    parser.add_argument('-env', default='makebedfull-v0')
     parser.add_argument('-debug', action='store_true')
     return parser.parse_args()
 
