@@ -67,6 +67,8 @@ def eval_demo(demo_bot, n_iters):
 
             if env.satisfy():
                 reward += 5
+            
+            rewards.append(reward)
             # print(action)
             if done:
                 break

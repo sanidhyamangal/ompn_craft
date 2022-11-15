@@ -16,7 +16,7 @@ from train_ops import log_training_events
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 device = "cpu"
 CSV_FILE = "experiment/eval_ac_1.csv"
-TIME_STEPS = 50
+TIME_STEPS = 100
 env = TimeLimit(gym.make('makebedfull-v0'), max_episode_steps=TIME_STEPS)
 
 state_size = 1075
