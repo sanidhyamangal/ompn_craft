@@ -76,9 +76,10 @@ def eval_demo(demo_bot, n_iters):
         if planning_errors > prev_plan_errors:
             continue
         print('Iteration: {}, Score: {}, Task Done {}, Bugs Detected: {}'.format(iter,
-                                                                                                 sum(rewards).item(),
+                                                                                                 sum(rewards),
                                                                                                  task_done, bugs_found,
                                                                                                  ))
+        log_training_events([iter, task_done, bugs_found],CSV_FILE)
         
 
     env.close()
