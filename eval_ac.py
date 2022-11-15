@@ -23,6 +23,22 @@ state_size = 1075
 action_size = 5
 lr = 0.0001
 
+class Actor(nn.Module):
+    def __init__(self, state_size, action_size):
+        super(Actor, self).__init__()
+        self.state_size = state_size
+        self.action_size = action_size
+        self.linear1 = nn.Linear(self.state_size, 128)
+        self.linear2 = nn.Linear(128, 256)
+        self.linear3 = nn.Linear(256, self.action_size)
+
+    def forward(self, state):
+        output = F.relu(self.linear1(state))
+        output = F.relu(self.linear2(output))
+        output = self.linear3(output)
+        distribution = Categorical(F.softmax(output, dim=-1))
+        return distribution
+
 def eval_ac(actor,  n_iters):
     for iter in range(n_iters):
         visited_path = np.zeros((10,10))
