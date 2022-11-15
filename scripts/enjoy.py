@@ -11,6 +11,7 @@ import torch
 from typing import Dict
 import numpy
 from utils import check_if_buggy_region
+from gym_psketch import DictList, Actions
 
 
 def get_args():
@@ -107,15 +108,16 @@ class Model(Renderer):
         self.mems = None
         self.output = None
 
-    def reset(self):
+    def reset(self,ch):
         with torch.no_grad():
             self.mems = self.bot.init_memory(torch.tensor([self.env.env_id]).long())
         self.output = None
 
     def get_action(self, obs, ch):
-        obs = torch.tensor(obs).float()
+        obs_updated = DictList(obs)
+        obs_updated.apply(lambda _t: torch.tensor(_t).float().unsqueeze(0))
         with torch.no_grad():
-            output = self.bot.get_action(obs.unsqueeze(0), self.mems)
+            output = self.bot.get_action(obs_updated, torch.tensor([self.env.env_id]).long(), self.mems, 'greedy')
         self.output = output
         if self.bot.is_recurrent:
             self.mems = output.mems
