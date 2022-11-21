@@ -12,11 +12,12 @@ from scripts.utils import check_if_buggy_region
 import gym_psketch
 import numpy as np
 from train_ops import log_training_events
+import sys
 
 
 
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-CSV_FILE = "experiment/eval_demo.csv"
+CSV_FILE = f"experiment/eval_demo_{sys.argv[1]}.csv"
 device = "cpu"
 TIME_STEPS = 100
 env = TimeLimit(gym.make('makebedfull-v0'), max_episode_steps=TIME_STEPS)
